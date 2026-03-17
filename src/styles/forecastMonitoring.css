@@ -1,0 +1,28 @@
+.forecast-root {
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 0 16px 32px;
+}
+
+.forecast-title {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.forecast-controls {
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.forecast-chart-container {
+  padding: 16px 20px 24px;
+}
+
+.forecast-chart-title {
+  margin-bottom: 8px;
+}
+
+.forecast-chart {
+  margin-top: 8px;
+}
+

@@ -1,70 +1,53 @@
-# Getting Started with Create React App
+# Forecast monitoring app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This app visualises national-level UK wind power generation, comparing **actual** generation with **forecasted** generation from the Elexon BMRS APIs.
 
-## Available Scripts
+- **Actuals (blue line)**: `FUELHH` dataset, `fuelType=WIND`.
+- **Forecasts (green line)**: `WINDFOR` dataset.
+- **Time window**: only data for **January 2024** is used.
+- **Forecast horizon**: user-selectable **0–48 hours**; for each target time the app shows the latest forecast created at least _H_ hours before that time.
 
-In the project directory, you can run:
+## Running the app
 
-### `npm start`
+- Install dependencies:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Start the development server:
 
-### `npm test`
+```bash
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Then open `http://localhost:3000` in your browser.
 
-### `npm run build`
+## UI and interaction
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Start Time / End Time**: MUI date-time pickers that select the target-time window; they are clamped to the range `2024-01-01 00:00` to `2024-01-31 23:59` (UTC).
+- **Forecast Horizon slider**: selects horizon `H` between 0 and 48 hours.
+  - For each half-hour target time in the window, the app finds the latest `WINDFOR` forecast whose `publishTime` is at least `H` hours before the target, with `0 ≤ horizon ≤ 48`.
+- **Chart**: MUI X `LineChart` showing:
+  - Blue line: actual generation from `FUELHH` (MW).
+  - Green line: horizon-specific forecast generation from `WINDFOR` (MW).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Analysis script (January 2024)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The project includes a simple Node script that computes basic forecast accuracy metrics for January 2024.
 
-### `npm run eject`
+- File: `analysis/jan2024Analysis.js`
+- It:
+  - Fetches January 2024 data from `FUELHH` (actuals) and `WINDFOR` (forecasts).
+  - Builds aligned actual vs forecast pairs for horizons **4h** and **24h**.
+  - Prints **MAE**, **RMSE**, and **bias** (mean error) for each horizon.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Running the analysis
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+From the project root:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+node analysis/jan2024Analysis.js
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+You will see metrics for the configured horizons printed to the console.
